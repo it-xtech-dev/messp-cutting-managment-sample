@@ -22,7 +22,7 @@
             onRecevied: onReceived
         }
     }
-    var pipe = new MessagePipe(window);
+    var pipe = new MessagePipe(window, 'http://localhost:61493/');
     pipe.send({
       message: 'new message from github.'
     });
