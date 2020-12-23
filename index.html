@@ -1,4 +1,36 @@
 <html>
+  <script>
+    function MessagePipe(targetWindow, targetOrigin) {
+        var onReceived = null
+
+        targetWindow.addEventListener('message', function (event) {
+            if (event.origin == targetOrigin) {
+                console.log("EventReceived", event)
+                if (typeof onReceived === 'function') {
+                    onReceived(JSON.parse(event.data));
+                }
+            }
+        }, false);
+
+        function send(command) {
+            targetWindow
+                .contentWindow
+                .postMessage(JSON.stringify(command), targetOrigin);
+        }
+
+        return {
+            send: send,
+            onRecevied: onReceived
+        }
+    }
+    var pipe = new MessagePipe(window);
+    pipe.send({
+      message: 'new message from github.'
+    });
+    pipe.onReceived = function(data) {
+      console.log(data);
+    };
+  </script>
   <body>
     Hellow world!
   </body>
