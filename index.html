@@ -22,13 +22,15 @@
             onRecevied: onReceived
         }
     }
-    var pipe = new MessagePipe(window, 'http://localhost:61493/');
-    pipe.send({
-      message: 'new message from github.'
-    });
-    pipe.onReceived = function(data) {
-      console.log(data);
-    };
+    document.onload = function() {
+      var pipe = new MessagePipe(window, 'https://it-xtech-dev.github.io');
+      pipe.send({
+        message: 'new message from github.'
+      });
+      pipe.onReceived = function(data) {
+        console.log(data);
+      };
+    }
   </script>
   <body>
     Hellow world!
