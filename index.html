@@ -24,7 +24,7 @@
         }
     }
     window.onload = function() {
-      window.pipe = new MessagePipe(window, 'https://it-xtech-dev.github.io');
+      window.pipe = new MessagePipe(window, '*');
       pipe.send({
         message: 'new message from github.'
       });
