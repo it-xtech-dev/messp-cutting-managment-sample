@@ -4,6 +4,8 @@
         var onReceived = null
 
         targetWindow.addEventListener('message', function (event) {
+            // github;
+            debugger;
             if (event.origin == targetOrigin) {
                 if (typeof onReceived === 'function') {
                     onReceived(JSON.parse(event.data));
