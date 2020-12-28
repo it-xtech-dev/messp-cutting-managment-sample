@@ -5,7 +5,6 @@
 
         targetWindow.addEventListener('message', function (event) {
             if (event.origin == targetOrigin) {
-                console.log("EventReceived", event)
                 if (typeof onReceived === 'function') {
                     onReceived(JSON.parse(event.data));
                 }
@@ -19,10 +18,10 @@
 
         return {
             send: send,
-            onRecevied: onReceived
+            onReceived: onReceived
         }
     }
-    document.onload = function() {
+    window.onload = function() {
       var pipe = new MessagePipe(window, 'https://it-xtech-dev.github.io');
       pipe.send({
         message: 'new message from github.'
