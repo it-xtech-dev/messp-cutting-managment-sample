@@ -4,8 +4,10 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
   var _connectionTimer = null;
   var _timeout = timeout || 5000;
   var _connectedStartedOn = new Date();
-  var onReceived = null
+  var _connectionErrorStack = [];
+  var onReceived = null;
   var onConnected = null;
+  
 
   // Adding listener to target window (will listen for incomming messages);
   window.addEventListener('message', function (event) {
@@ -32,7 +34,7 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
           if (new Date().getTime() - _connectedStartedOn.getTime() >= _timeout) {
               // when time out reached, throw an exception;
               clearInterval(_connectionTimer);
-              throw ('Pipe timeout exceeded!');
+              throw ('Pipe timeout exceeded!', _connectionErrorStack);
           } else if (_isConnected) {
               // when 'hello' message received from other side _isConnected flag will be set and connection process can be terminated.
               clearInterval(_connectionTimer);
@@ -42,7 +44,11 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
               }
           } else {
               // send 'hello' message until other side hello received.
-              _sendNow('hello');
+              try {
+                  _sendNow('hello');
+              } catch (error) {
+                  _connectionErrorStack.push(error);
+              }
           }
       }, 100);
   }
@@ -51,6 +57,10 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
    * Sends message immediately to targetWindow.
    * */
   function _sendNow(command) {
+      if (targetWindow.origin !== targetOrigin) {
+          console.warn('Window origin mismatch. Send message aborted.');
+          return;
+      }
       targetWindow
           .postMessage(JSON.stringify(command), targetOrigin);
   }
