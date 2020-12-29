@@ -7,8 +7,7 @@
       pipe.send({
         message: 'new message from github.'
       });
-      pipe.onReceived = function(data) {
-        debugger
+      pipe.onConnected = function(data) {
         console.log('GitHub: connected!');
       };      
       pipe.onReceived = function(data) {
