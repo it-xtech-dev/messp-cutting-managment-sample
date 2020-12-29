@@ -1,5 +1,4 @@
 function MessagePipe(targetWindow, targetOrigin, timeout) {
-  debugger;
   var _sendQueue = [];
   var _isConnected = false;
   var _connectionTimer = null;
