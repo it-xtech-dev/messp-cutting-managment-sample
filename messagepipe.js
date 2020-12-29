@@ -5,20 +5,20 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
   var _timeout = timeout || 5000;
   var _connectedStartedOn = new Date();
   var _connectionErrorStack = [];
-  var onReceived = null;
-  var onConnected = null;
+  var _api;
   
 
   // Adding listener to target window (will listen for incomming messages);
   window.addEventListener('message', function (event) {
       // verify message origin
       if (event.origin == targetOrigin) {
-          if (event.data !== 'hello' && typeof onReceived === 'function') {
+          if (event.data !== 'hello' && typeof _api.onReceived === 'function') {
               // when non 'hello' message received process payload.
-              onReceived(JSON.parse(event.data));
+              _api.onReceived(JSON.parse(event.data));
           }
           // when any message received set connected flag.
           _isConnected = true;
+          if (typeof _api.onConnected === 'function') _api.onConnected();
       }
   }, false);
 
@@ -71,10 +71,12 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
       }
   }
 
-  return {
+  _api = {
       connect: connect,
       send: send,
       onReceived: onReceived,
       onConnected: onConnected,
   }
+
+  return _api;
 }
