@@ -34,7 +34,8 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
           if (new Date().getTime() - _connectedStartedOn.getTime() >= _timeout) {
               // when time out reached, throw an exception;
               clearInterval(_connectionTimer);
-              throw ('Pipe timeout exceeded!', _connectionErrorStack);
+              console.error('Pipe timeout exceeded!', { errorStack: _connectionErrorStack });
+              //throw new Error('Pipe timeout exceeded!');
           } else if (_isConnected) {
               // when 'hello' message received from other side _isConnected flag will be set and connection process can be terminated.
               clearInterval(_connectionTimer);
@@ -57,10 +58,6 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
    * Sends message immediately to targetWindow.
    * */
   function _sendNow(command) {
-      if (targetWindow.origin !== targetOrigin) {
-          console.warn('Window origin mismatch. Send message aborted.');
-          return;
-      }
       targetWindow
           .postMessage(JSON.stringify(command), targetOrigin);
   }
