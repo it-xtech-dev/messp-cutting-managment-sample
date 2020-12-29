@@ -74,8 +74,8 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
   _api = {
       connect: connect,
       send: send,
-      onReceived: onReceived,
-      onConnected: onConnected,
+      onReceived: null,
+      onConnected: null,
   }
 
   return _api;
