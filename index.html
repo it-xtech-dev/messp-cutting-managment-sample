@@ -1,37 +1,18 @@
 <html>
+  <head>
+    <script src="./messagepipe.js"></script>
+  </head>
   <script>
-    function MessagePipe(targetWindow, targetOrigin) {
-        var onReceived = null
-
-        targetWindow.addEventListener('message', function (event) {
-            // github;
-            debugger;
-            if (event.origin == targetOrigin) {
-                if (typeof onReceived === 'function') {
-                    onReceived(JSON.parse(event.data));
-                }
-            }
-        }, false);
-
-        function send(command) {
-            targetWindow
-                .postMessage(JSON.stringify(command), targetOrigin);
-        }
-
-        return {
-            send: send,
-            onReceived: onReceived
-        }
-    }
-    window.onload = function() {
-      window.pipe = new MessagePipe(window, '*');
+      window.pipe = new MessagePipe(window, 'http://localhost:61493/');
       pipe.send({
         message: 'new message from github.'
       });
       pipe.onReceived = function(data) {
-        console.log(data);
+        console.log('GitHub: connected!');
+      };      
+      pipe.onReceived = function(data) {
+        console.log('GitHub: recevied', data);
       };
-    }
   </script>
   <body>
     Hellow world!
