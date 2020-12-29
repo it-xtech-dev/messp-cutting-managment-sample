@@ -22,13 +22,10 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
       }
   }, false);
 
-  // Establishing the connection.
-  _connect();
-
   /**
    * Ensures connection is established, and processed send queue;
    * */
-  function _connect() {
+  function connect() {
       // awaits for window to be initialized by sending hello message
       _connectionTimer = setInterval(function () {
           if (new Date().getTime() - _connectedStartedOn.getTime() >= _timeout) {
@@ -75,8 +72,9 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
   }
 
   return {
+      connect: connect,
       send: send,
       onReceived: onReceived,
-      onConnected: onConnected
+      onConnected: onConnected,
   }
 }
