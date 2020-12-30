@@ -45,11 +45,11 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
           } else {
               // send 'hello' message until other side hello received.
               try {
-                  // INSIDE FRAME SECNARIO ONLY:
+                  // NOT FRAME SECNARIO ONLY:
                   // When parent origin is different from specified targetOrigin DOM exception will occur in asyc manner when calling postMessage().
                   // To detect this scenario and handle an error synchronously origin check is done before _sendNow can be executed.
                   // Supressed error message: VM878:1 Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('http://some.domain') does not match the recipient window's origin ('https://some.domain1').
-                  if (self !== top) {
+                  if (self === top) {
                       _isParentOriginValid(true)
                   }
                   // send hellow message to pipe
