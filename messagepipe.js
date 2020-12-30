@@ -45,7 +45,14 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
           } else {
               // send 'hello' message until other side hello received.
               try {
-                  _isTargetOriginValid(true)
+                  // INSIDE FRAME SECNARIO ONLY:
+                  // When parent origin is different from specified targetOrigin DOM exception will occur in asyc manner when calling postMessage().
+                  // To detect this scenario and handle an error synchronously origin check is done before _sendNow can be executed.
+                  // Supressed error message: VM878:1 Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('http://some.domain') does not match the recipient window's origin ('https://some.domain1').
+                  if (parent == top) {
+                      _isParentOriginValid(true)
+                  }
+                  // send hellow message to pipe
                   _sendNow(':>hello');
               } catch (error) {
                   _connectionErrorStack.push(error);
@@ -54,7 +61,8 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
       }, 100);
   }
 
-  function _isTargetOriginValid(beVerbose) {
+  function _isParentOriginValid(beVerbose) {
+      // https://stackoverflow.com/questions/4594492/check-if-parent-window-is-iframe-or-not/4594531
       var result = targetWindow.location.href.substring(0, targetOrigin.length) === targetOrigin.length;
       if (beVerbose === true && result === false) throw new Error('TargetOrigin mismatch actual:"' + targetWindow.location.href + '", expected:"' + targetOrigin + '"');
       return result;
