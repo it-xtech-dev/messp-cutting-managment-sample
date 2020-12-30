@@ -45,12 +45,19 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
           } else {
               // send 'hello' message until other side hello received.
               try {
+                  _isTargetOriginValid(true)
                   _sendNow(':>hello');
               } catch (error) {
                   _connectionErrorStack.push(error);
               }
           }
       }, 100);
+  }
+
+  function _isTargetOriginValid(beVerbose) {
+      var result = targetWindow.location.href.substring(0, targetOrigin.length) === targetOrigin.length;
+      if (beVerbose === true && result === false) throw new Error('TargetOrigin mismatch actual:"' + targetWindow.location.href + '", expected:"' + targetOrigin + '"');
+      return result;
   }
 
   /**
