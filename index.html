@@ -21,10 +21,10 @@
             <button class="btn btn-secondary" @click.prevent="remove(index)">- Remove</button>
           </div>
         </div>
-        <button class="btn btn-primary" @click.prevent="add">+ Add item</button>
-        <button class="btn btn-primary" @click.prevent="save">Save</button>
-        <button class="btn btn-secondary" @click.prevent="reset">Reset</button>
-        <button class="btn btn-secondary" @click.prevent="cancel">Cancel</button>
+        <button class="btn btn-success float-left" @click.prevent="add">+ Add item</button>
+        <button class="btn btn-secondary float-left ml-1" @click.prevent="reset">Reset</button>
+        <button class="btn btn-primary float-right ml-1" @click.prevent="save">Save</button>
+        <button class="btn btn-warning float-right" @click.prevent="cancel">Cancel</button>
       </form>
     </div>
     <script>
