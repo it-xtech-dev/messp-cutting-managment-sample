@@ -18,6 +18,8 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
               // when non 'hello' message received process payload.
               _api.onReceived(JSON.parse(event.data));
           } else {
+              // respond to 'hello' message
+              _sendNow(':>hello');
               // when any message received set connected flag and raise connected event.
               if (_isConnected === false && typeof _api.onConnected === 'function') _api.onConnected();
               _isConnected = true;
