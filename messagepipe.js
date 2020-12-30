@@ -6,6 +6,7 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
   var _timeout = timeout || 5000;
   var _connectedStartedOn = new Date();
   var _connectionErrorStack = [];
+  var helloResponseCount =
   var _api;
 
 
@@ -13,17 +14,19 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
   window.addEventListener('message', function (event) {
       // verify message origin
       if (event.origin == targetOrigin) {
-          if (event.data !== '":>hello"' && typeof _api.onReceived === 'function') {
-              if (!_isConnected) console.warn('Received payload message before connection was established!', event)
-              // when non 'hello' message received process payload.
-              _api.onReceived(JSON.parse(event.data));
-          } else {
+          if (event.data === '":>hello"' || event.data === '":>hi"') {
               // respond to 'hello' message
-              _sendNow(':>hello');
+              if (event.data === '":>hello"') _sendNow(':>hi');
               // when any message received set connected flag and raise connected event.
               if (_isConnected === false && typeof _api.onConnected === 'function') _api.onConnected();
               _isConnected = true;
               _isConnecting = false;
+          } else {
+              if (typeof _api.onReceived === 'function') {
+                  if (!_isConnected) console.warn('Received payload message before connection was established!', event)
+                  // when non 'hello' message received process payload.
+                  _api.onReceived(JSON.parse(event.data));
+              }
           }
       }
   }, false);

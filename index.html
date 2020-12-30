@@ -61,11 +61,9 @@
             save: function() {
               pipe.send({
                 method: "setRemovalList",
-                params: [
-                  {
+                params: {
                     removalList: this.removalList
-                  }
-                ]
+                }
               })
             },
             reset: function() {
