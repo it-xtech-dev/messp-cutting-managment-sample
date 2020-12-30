@@ -12,18 +12,18 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
   window.addEventListener('message', function (event) {
       // verify message origin
       if (event.origin == targetOrigin) {
-          if (event.data !== 'hello' && typeof _api.onReceived === 'function') {
+          if (event.data !== '":>hello"' && typeof _api.onReceived === 'function') {
               // when non 'hello' message received process payload.
               _api.onReceived(JSON.parse(event.data));
           }
-          // when any message received set connected flag.
+          // when any message received set connected flag and raise connected event.
+          if (_isConnected === false && typeof _api.onConnected === 'function') _api.onConnected();
           _isConnected = true;
-          if (typeof _api.onConnected === 'function') _api.onConnected();
       }
   }, false);
 
   /**
-   * Ensures connection is established, and processed send queue;
+   * Establishes pipe connection, and processed send queue;
    * */
   function connect() {
       // awaits for window to be initialized by sending hello message
@@ -43,7 +43,7 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
           } else {
               // send 'hello' message until other side hello received.
               try {
-                  _sendNow('hello');
+                  _sendNow(':>hello');
               } catch (error) {
                   _connectionErrorStack.push(error);
               }
@@ -53,15 +53,17 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
 
   /**
    * Sends message immediately to targetWindow.
+   * @param {object} command - the command object.
    * */
   function _sendNow(command) {
+      var data = JSON.stringify(command);
       targetWindow
-          .postMessage(JSON.stringify(command), targetOrigin);
+          .postMessage(data, targetOrigin);
   }
 
   /**
    * Sends message to targetWidow when connection established.
-   * @@param command - the command object.
+   * @param command - the command object.
    */
   function send(command) {
       if (_isConnected) {
