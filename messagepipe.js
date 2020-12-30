@@ -1,6 +1,7 @@
 function MessagePipe(targetWindow, targetOrigin, timeout) {
   var _sendQueue = [];
   var _isConnected = false;
+  var _isConnecting = false;
   var _connectionTimer = null;
   var _timeout = timeout || 5000;
   var _connectedStartedOn = new Date();
@@ -19,6 +20,7 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
           // when any message received set connected flag and raise connected event.
           if (_isConnected === false && typeof _api.onConnected === 'function') _api.onConnected();
           _isConnected = true;
+          _isConnecting = false;
       }
   }, false);
 
@@ -28,11 +30,14 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
   function connect() {
       if (_isConnected) throw new Error('Pipe already connected');
       _connectedStartedOn = new Date();
+      _isConnecting = true;
       // awaits for window to be initialized by sending hello message
       _connectionTimer = setInterval(function () {
           if (new Date().getTime() - _connectedStartedOn.getTime() >= _timeout) {
               // when time out reached, throw an exception;
               clearInterval(_connectionTimer);
+              _isConnected = false;
+              _isConnecting = false;
               console.error('Pipe connection timeout exceeded! Target origin (' + targetOrigin + ') did not responded with "hello" message.', { errorStack: _connectionErrorStack });
               //throw new Error('Pipe timeout exceeded!');
           } else if (_isConnected) {
@@ -61,6 +66,10 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
       }, 100);
   }
 
+  /**
+   * Validates whether targetWindow origin matches 
+   * @param {any} beVerbose - when true throws an error if not valid.
+   */
   function _isParentOriginValid(beVerbose) {
       // https://stackoverflow.com/questions/4594492/check-if-parent-window-is-iframe-or-not/4594531
       var result = targetWindow.location.href.substring(0, targetOrigin.length) === targetOrigin.length;
@@ -83,6 +92,7 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
    * @param command - the command object.
    */
   function send(command) {
+      if (!_isConnected && !_isConnecting) throw new Error("Cannot send any message because pipe is not connected. Use .connect() method and check for expections.")
       if (_isConnected) {
           _sendNow(command);
       } else {
