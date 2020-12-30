@@ -6,7 +6,6 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
   var _timeout = timeout || 5000;
   var _connectedStartedOn = new Date();
   var _connectionErrorStack = [];
-  var helloResponseCount =
   var _api;
 
 
