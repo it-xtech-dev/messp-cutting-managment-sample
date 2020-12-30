@@ -33,7 +33,7 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
           if (new Date().getTime() - _connectedStartedOn.getTime() >= _timeout) {
               // when time out reached, throw an exception;
               clearInterval(_connectionTimer);
-              console.error('Pipe timeout exceeded!', { errorStack: _connectionErrorStack });
+              console.error('Pipe connection timeout exceeded! Target origin (' + targetOrigin + ') did not responded with "hello" message.', { errorStack: _connectionErrorStack });
               //throw new Error('Pipe timeout exceeded!');
           } else if (_isConnected) {
               // when 'hello' message received from other side _isConnected flag will be set and connection process can be terminated.
@@ -49,7 +49,7 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
                   // When parent origin is different from specified targetOrigin DOM exception will occur in asyc manner when calling postMessage().
                   // To detect this scenario and handle an error synchronously origin check is done before _sendNow can be executed.
                   // Supressed error message: VM878:1 Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('http://some.domain') does not match the recipient window's origin ('https://some.domain1').
-                  if (parent == top) {
+                  if (self !== top) {
                       _isParentOriginValid(true)
                   }
                   // send hellow message to pipe
