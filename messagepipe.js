@@ -6,7 +6,7 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
   var _connectedStartedOn = new Date();
   var _connectionErrorStack = [];
   var _api;
-  
+
 
   // Adding listener to target window (will listen for incomming messages);
   window.addEventListener('message', function (event) {
@@ -26,6 +26,8 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
    * Establishes pipe connection, and processed send queue;
    * */
   function connect() {
+      if (_isConnected) throw new Error('Pipe already connected');
+      _connectedStartedOn = new Date();
       // awaits for window to be initialized by sending hello message
       _connectionTimer = setInterval(function () {
           if (new Date().getTime() - _connectedStartedOn.getTime() >= _timeout) {
