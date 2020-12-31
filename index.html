@@ -1,4 +1,5 @@
 <html>
+  <!-- Cutting management + Sequence Plan Application integration example -->
   <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
@@ -29,15 +30,32 @@
     </div>
     <script>
       (function() {
+        // Assuming page loaded within the iframe.
+        // Establish connection with parent window by creating new message pipe.
+        // Second argument should point a domain (including protocol) where Sequence Plan is running.
         var pipe = new MessagePipe(window.parent, 'http://localhost:61493');
+        
+        // DEBUG ONLY, not required in production mode.
+        // This callback will be called as soon as pipe connects to the other end (pipe implements simple 'hello' routine that confirms connection establishing).
+        // CAUTION: callback has to be set before pipe is connected (calling .connect() method), otherwise event will occure before handler was assigned.
         pipe.onConnected = function(data) {
           console.log('MOCKUP: pipe connected!');
-        };      
+        };
+
+        // This callback will handle incomming messages. At the moment cutting management scenario does not makes usage in this direction.
+        // CAUTION: callback has to be set before pipe is connected, otherwise some of the messages might lost.
         pipe.onReceived = function(data) {
           console.log('GitHub: recevied', data);
         };
-        pipe.connect();
 
+        // When initialized pipe has to be connected - this will ensure that pipe is connected to the other end (Sequence Plan App).
+        pipe.connect();
+        
+        // NOTE: pipe shouled be disposed if you plan to reinitialize it within same page load (listerns are bound to window an will stay active when not disposed).
+        // pipe.dispose();
+
+        // Initializing new vue instace that will mockup the UI.
+        // https://vuejs.org/
         new Vue({
           el: '#app',
           data: {
@@ -57,8 +75,13 @@
                 "rawSapMaterial": "",
                 "lamWoodModuleLength": ""
               });
-            },          
+            },       
             save: function() {
+              // When save button clicked sending message to Sequence Plan app.
+              // It is expected that message payload (first argment of .send() method) will have specified format:
+              // { method: '<methodName>', params: { '<param1Name>': '<param1Value>', '<param2Name>': '<param2Value>', '<paramNName>': '<paramNValue>' } }
+              // In case of below method name is "setRemovalList" and the only paramter is removalList value (assigned from ui).
+              // On Sequece Plan app end: when message received "setRemovalList" will store removal list for current location and the will close cutting management layer (modal).
               pipe.send({
                 method: "setRemovalList",
                 params: {
@@ -70,6 +93,11 @@
               this.removalList = []
             },
             cancel: function () {
+              // When cancel button clicked sending message to Sequence Plan app.
+              // It is expected that message payload (first argment of .send() method) will have specified format:
+              // { method: '<methodName>', params: { '<param1Name>': '<param1Value>', '<param2Name>': '<param2Value>', '<paramNName>': '<paramNValue>' } }
+              // In case of below method name is "terminate" and there are no parameters.
+              // On Sequece Plan app end: when message received "terminate" will release pipe resources and then destroy layer (modal) including cutting management iframe.
               pipe.send({
                 method: "terminate"
               });

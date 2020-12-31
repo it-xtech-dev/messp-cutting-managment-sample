@@ -1,4 +1,5 @@
 function MessagePipe(targetWindow, targetOrigin, timeout) {
+  var _targetWindow = targetWindow;
   var _sendQueue = [];
   var _isConnected = false;
   var _isConnecting = false;
@@ -10,7 +11,13 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
 
 
   // Adding listener to target window (will listen for incomming messages);
-  window.addEventListener('message', function (event) {
+  window.addEventListener('message', _listener, false);
+
+  /**
+   * Handles new message arrival.
+   * @param {any} event - the postMessage event object.
+   */
+  function _listener(event) {
       // verify message origin
       if (event.origin == targetOrigin) {
           if (event.data === '":>hello"' || event.data === '":>hi"') {
@@ -28,7 +35,7 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
               }
           }
       }
-  }, false);
+  }
 
   /**
    * Establishes pipe connection, and processed send queue;
@@ -73,13 +80,25 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
   }
 
   /**
+   * Releases pipe resources.
+   * */
+  function dispose() {
+      clearInterval(_connectionTimer);
+      window.removeEventListener('message', _listener, false);
+      _connectionErrorStack = null;
+      _targetWindow = null;
+      _sendQueue = null;
+      _api = null;
+  }
+
+  /**
    * Validates whether targetWindow origin matches 
    * @param {any} beVerbose - when true throws an error if not valid.
    */
   function _isParentOriginValid(beVerbose) {
       // https://stackoverflow.com/questions/4594492/check-if-parent-window-is-iframe-or-not/4594531
-      var result = targetWindow.location.href.substring(0, targetOrigin.length) === targetOrigin.length;
-      if (beVerbose === true && result === false) throw new Error('TargetOrigin mismatch actual:"' + targetWindow.location.href + '", expected:"' + targetOrigin + '"');
+      var result = _targetWindow.location.href.substring(0, targetOrigin.length) === targetOrigin.length;
+      if (beVerbose === true && result === false) throw new Error('TargetOrigin mismatch actual:"' + _targetWindow.location.href + '", expected:"' + targetOrigin + '"');
       return result;
   }
 
@@ -89,7 +108,7 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
    * */
   function _sendNow(command) {
       var data = JSON.stringify(command);
-      targetWindow
+      _targetWindow
           .postMessage(data, targetOrigin);
   }
 
@@ -111,6 +130,7 @@ function MessagePipe(targetWindow, targetOrigin, timeout) {
       send: send,
       onReceived: null,
       onConnected: null,
+      dispose: dispose
   }
 
   return _api;
