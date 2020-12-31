@@ -45,7 +45,7 @@
         // This callback will handle incomming messages. At the moment cutting management scenario does not makes usage in this direction.
         // CAUTION: callback has to be set before pipe is connected, otherwise some of the messages might lost.
         pipe.onReceived = function(data) {
-          console.log('GitHub: recevied', data);
+          console.log('MOCKUP: message recevied', data);
         };
 
         // When initialized pipe has to be connected - this will ensure that pipe is connected to the other end (Sequence Plan App).
