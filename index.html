@@ -33,7 +33,7 @@
         // Assuming page loaded within the iframe.
         // Establish connection with parent window by creating new message pipe.
         // Second argument should point a domain (including protocol) where Sequence Plan is running.
-        var pipe = new MessagePipe(window.parent, 'http://localhost:61493');
+        var pipe = new MessagePipe(window.parent, 'http://frontend.messp.astor.office.xtech.pl');
         
         // DEBUG ONLY, not required in production mode.
         // This callback will be called as soon as pipe connects to the other end (pipe implements simple 'hello' routine that confirms connection establishing).
