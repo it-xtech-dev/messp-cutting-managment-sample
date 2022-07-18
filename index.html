@@ -35,7 +35,7 @@
         // Establish connection with parent window by creating new message pipe.
         // Second argument should point a domain (including protocol) where Sequence Plan is running.
         // http://localhost:61493 - local, http://frontend.messp.astor.office.xtech.pl - demo
-        var pipe = new MessagePipe(window.parent, 'http://localhost:61493')
+          var pipe = new MessagePipe(window.parent, 'http://frontend.messp.astor.office.xtech.pl')
         
         // DEBUG ONLY, not required in production mode.
         // This callback will be called as soon as pipe connects to the other end (pipe implements simple 'hello' routine that confirms connection establishing).
@@ -59,12 +59,14 @@
             removalList: []
           },
           mounted() {
-              // This callback will handle incomming messages. At the moment cutting management scenario does not makes usage in this direction.
-              // CAUTION: callback has to be set before pipe is connected, otherwise some of the messages might lost.
               var me = this
 
+              // This callback will handle incomming messages. At the moment cutting management scenario does not makes usage in this direction.
+              // CAUTION: callback has to be set before pipe is connected, otherwise some of the messages might lost.
               pipe.onReceived = function (data) {
                   console.log('MOCKUP: message recevied', data)
+
+                  // Get removal list from app  (Sequence Plan App)
                   if (data.method === 'getAppRemovalList') {
                       me.removalList = data.params.removalList.length > 0 ? data.params.removalList : me.removalList
                       me.isReceived = true
