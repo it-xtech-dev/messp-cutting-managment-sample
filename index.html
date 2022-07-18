@@ -66,11 +66,13 @@
           mounted() {
               // This callback will handle incomming messages. At the moment cutting management scenario does not makes usage in this direction.
               // CAUTION: callback has to be set before pipe is connected, otherwise some of the messages might lost.
+              var me = this
+
               pipe.onReceived = function (data) {
                   console.log('MOCKUP: message recevied', data)
                   if (data.method === 'getAppRemovalList') {
-                      this.removalList = data.params.removalList.length > 0 ? data.params.removalList : this.removalList
-                      this.isReceived = true
+                      me.removalList = data.params.removalList.length > 0 ? data.params.removalList : me.removalList
+                      me.isReceived = true
                   }
               }
           },
