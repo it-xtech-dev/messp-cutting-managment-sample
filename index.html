@@ -56,7 +56,12 @@
           el: '#app',
           data: {
             isReceived: false,
-            removalList: []
+            removalList: [
+                {
+                    "rawSapMaterial": "",
+                    "lamWoodModuleLength": ""
+                }
+            ]
           },
           mounted() {
               // This callback will handle incomming messages. At the moment cutting management scenario does not makes usage in this direction.
@@ -64,7 +69,7 @@
               pipe.onReceived = function (data) {
                   console.log('MOCKUP: message recevied', data)
                   if (data.method === 'getAppRemovalList') {
-                      this.removalList = data.params.removalList
+                      this.removalList = data.params.removalList.length > 0 ? data.params.removalList : this.removalList
                       this.isReceived = true
                   }
               }
@@ -103,7 +108,7 @@
               // On Sequece Plan app end: when message received "terminate" will release pipe resources and then destroy layer (modal) including cutting management iframe.
               pipe.send({
                 method: "terminate"
-              });
+              })
             }
           }
         })
