@@ -23,8 +23,8 @@
           </div>
         </div>
         <button class="btn btn-success float-left" @click.prevent="add">+ Add item</button>
-        <button class="btn btn-secondary float-left ml-1" @click.prevent="reset">Reset</button>
-        <button class="btn btn-primary float-right ml-1" @click.prevent="save">Save</button>
+        <button v-if="hasAnyRemovals" class="btn btn-secondary float-left ml-1" @click.prevent="reset">Reset</button>
+        <button v-if="hasAnyRemovals" class="btn btn-primary float-right ml-1" @click.prevent="save">Save</button>
         <button class="btn btn-warning float-right" @click.prevent="cancel">Cancel</button>
       </form>
       <div v-else="">Loading data...</div>
@@ -56,12 +56,7 @@
           el: '#app',
           data: {
             isReceived: false,
-            removalList: [
-                {
-                    "rawSapMaterial": "",
-                    "lamWoodModuleLength": ""
-                }
-            ]
+            removalList: []
           },
           mounted() {
               // This callback will handle incomming messages. At the moment cutting management scenario does not makes usage in this direction.
@@ -74,6 +69,11 @@
                       me.removalList = data.params.removalList.length > 0 ? data.params.removalList : me.removalList
                       me.isReceived = true
                   }
+              }
+          },
+          computed: {
+              hasAnyRemovals: function () {
+                  return this.removalList.length > 0
               }
           },
           methods: {
